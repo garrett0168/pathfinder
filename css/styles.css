@@ -1,0 +1,23 @@
+circle {
+  z-index: 2;
+  fill: black;
+}
+circle:hover {
+  fill: blue;
+}
+
+.startCity {
+  fill: green;
+}
+
+.endCity {
+  fill: red;
+}
+
+line {
+  z-index: 1;
+}
+
+#toolbar {
+  margin: 10px 0px;
+}

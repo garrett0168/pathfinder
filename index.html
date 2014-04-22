@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pathfinder</title>
+    <link href="css/vendor/bootstrap.css" media="all" rel="stylesheet" />
+    <link href="css/styles.css" media="all" rel="stylesheet" />
+
+    <script type="text/javascript" src="js/vendor/jquery.js"></script>
+    <script type="text/javascript" src="js/vendor/bootstrap.js"></script>
+    <script type="text/javascript" src="js/vendor/d3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vendor/lodash.js"></script>
+    <script type="text/javascript" src="js/vendor/chance.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/city.js"></script>
+    <script type="text/javascript" src="js/road.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript" src="js/path.js"></script>
+  </head>
+
+  <body>
+    <div id="popoverTemplate" style="display:none;">
+      <button id="setStartCity" class="btn btn-primary">Set Start City</button>
+      <button id="setEndCity" class="btn btn-primary">Set End City</button>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div id="toolbar">
+          <p id="startCityInfo">
+          </p>
+          <p id="endCityInfo">
+          </p>
+          <p id="message">
+          </p>
+
+          <button id="findShortestPath" class="btn btn-primary">Find Shortest Path</button>
+        </div>
+
+        <div id="map">
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>
