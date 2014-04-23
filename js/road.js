@@ -24,3 +24,8 @@ Road.prototype.otherCity = function(firstCity)
   }
   return null;
 }
+
+Road.prototype.length = function()
+{
+  return this.city1.distanceTo(this.city2);
+}

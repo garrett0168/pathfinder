@@ -8,7 +8,7 @@ var Map = function(totalCities)
     this.grid[i] = new Array(this.gridSize);
   }
 
-  this.cities = [];
+  this.cities = new Array(totalCities);
   this.roads = [];
 };
 
@@ -25,7 +25,7 @@ Map.prototype.randomlyGenerateCitiesAndRoads = function()
 
     var city = new City(chance.city(), i, x, y);
     this.grid[x][y] = city;
-    this.cities.push(city);
+    this.cities[city.id] = city;
   }
 
   // build the roads
@@ -65,25 +65,8 @@ Map.prototype.randomlyGenerateCitiesAndRoads = function()
   }
 }
 
-Map.prototype.backtracePath = function(city)
+Map.prototype.resetRoads = function()
 {
-  var path = [city];
-  while (city.parent) 
-  {
-    city = city.parent;
-    path.push(city);
-  }
-  return path.reverse();
-}
-
-Map.prototype.resetCityAndRoads = function()
-{
-  for(i = 0; i < this.cities.length; i += 1) 
-  {
-    this.cities[i].visited = false;
-    this.cities[i].distance = Number.POSITIVE_INFINITY;
-    this.cities[i].parent = null;
-  }
   for(i = 0; i < this.roads.length; i+= 1)
   {
     this.roads[i].highlighted = false;
@@ -94,54 +77,29 @@ Map.prototype.findShortestPath = function(startCity, endCity)
 {
   if(startCity == null || endCity == null)
   {
-    return;
+    return false;
   }
 
-  var i, Q = [], u;
- 
-  this.resetCityAndRoads();
- 
-  startCity.visited = true;
-  startCity.distance = 0;
-  startCity.parent = null;
- 
-  Q.push(startCity);
- 
-  while (Q.length > 0) 
+  this.resetRoads();
+
+  var citiesToVisit = this.algorithm.run(this.cities, startCity, endCity);
+  if(citiesToVisit.length == 0)
   {
-    u = Q.splice(0, 1)[0];
-    if(u == endCity)
-    {
-      var citiesToVisit = this.backtracePath(u);
-      for(var k = 0; k < citiesToVisit.length - 1; k++)
-      {
-        var currentCity = citiesToVisit[k];
-        var nextCity = citiesToVisit[k+1];
-        var road = _.find(currentCity.roads, function(r) { return r.isConnectedTo(nextCity); });
-        if(!road)
-        {
-          console.error("Something bad happened...");
-          break;
-        }
-        road.highlighted = true;
-      }
-
-      return true;
-    }
-
-    for (i = 0; i < u.roads.length; i += 1) 
-    {
-      var otherCity = u.roads[i].otherCity(u);
-      if(otherCity.visited === false) 
-      {
-        otherCity.visited = true;
-        otherCity.distance = u.distance + 1;
-        otherCity.parent = u;
-        Q.push(otherCity);
-      }
-    }
-    u.visited = true;
+    return false;
   }
 
-  return false;
+  for(var k = 0; k < citiesToVisit.length - 1; k++)
+  {
+    var currentCity = citiesToVisit[k];
+    var nextCity = citiesToVisit[k+1];
+    var road = _.find(currentCity.roads, function(r) { return r.isConnectedTo(nextCity); });
+    if(!road)
+    {
+      console.error("Something bad happened...");
+      break;
+    }
+    road.highlighted = true;
+  }
+
+  return true;
 }

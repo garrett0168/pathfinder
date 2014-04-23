@@ -7,28 +7,30 @@ var PathApp = function()
   }
   this.CITY_RADIUS = 10;
   this.svgContainer = null;
-  this.visiblePopover = null;
-  this.selectedCity = null;
-
+  
   this.startCity = null;
   this.endCity = null;
 
   this.map = new Map(this.TOTAL_CITIES);
   this.map.randomlyGenerateCitiesAndRoads();
+  
+  // Swap algorithms here
+  this.map.algorithm = new Dijkstra();
+  //this.map.algorithm = new BFS();
 };
 
-PathApp.prototype.setStartCity = function()
+PathApp.prototype.setStartCity = function(city)
 {
-  this.startCity = this.selectedCity;
-  this.map.resetCityAndRoads();
+  this.startCity = city;
+  this.endCity = null;
+  this.map.resetRoads();
   this.refreshSvg();
 }
 
-PathApp.prototype.setEndCity = function()
+PathApp.prototype.setEndCity = function(city)
 {
-  this.endCity = this.selectedCity;
-  this.map.resetCityAndRoads();
-  this.refreshSvg();
+  this.endCity = city;
+  this.findShortestPath();
 }
 
 PathApp.prototype.refreshSvg = function()
@@ -85,36 +87,6 @@ PathApp.prototype.updateCityDisplayInfo = function()
   }
 }
 
-PathApp.prototype.createPopovers = function()
-{
-  var self = this;
-  $('circle').popover();
-  $('circle').on('click', function(e) {
-    // don't fall through
-    e.stopPropagation();
-    // check if the one clicked is now shown
-    if ($(this).data('bs.popover').tip().hasClass('in')) 
-    {
-      // if another was showing, hide it
-      self.visiblePopover && self.visiblePopover.popover('hide');
-      // then store the current popover
-      self.visiblePopover = $(this);
-
-      self.selectedCity = self.map.cities[$(this).attr('city-id')];
-    } 
-    else 
-    {
-      // if it was hidden, then nothing must be showing
-      self.visiblePopover = '';
-    }
-  });
-
-  $("body").on('click', function () {
-    $("circle").popover('hide');
-    self.visiblePopover = '';
-  });
-}
-
 PathApp.prototype.updateRoadsAndCities = function()
 {
   var self = this;
@@ -156,17 +128,10 @@ PathApp.prototype.updateRoadsAndCities = function()
 
   cities.enter().append("svg:circle")
                 .append("svg:title")
-                .text(function(d) { return "City " + d.id; });
+                .text(function(d) { return d.name; });
 
-  var popoverHtml = $('#popoverTemplate').html();
   cities.attr("id", function (c) { return "city" + c.id; })
         .attr("city-id", function (c) { return c.id; })
-        .attr("data-title", function (c) { return c.name; })
-        .attr("data-html", function (c) { return "true"; })
-        .attr("data-trigger", function (c) { return "click"; })
-        .attr("data-container", function (c) { return "body"; })
-        .attr("data-toggle", function (c) { return "popover"; })
-        .attr("data-content", function (c) { return popoverHtml; })
         .attr("cx", function (c) { return (c.x * 10) + 5; })
         .attr("cy", function (c) { return (c.y * 10) + 5; })
         .attr("r", function (c) { 
@@ -186,6 +151,16 @@ PathApp.prototype.updateRoadsAndCities = function()
           {
             return "";
           }
+        })
+        .on("click", function (c) {
+          if(pathApp.startCity == null || pathApp.endCity)
+          {
+            pathApp.setStartCity(c);
+          }
+          else if(pathApp.startCity != null)
+          {
+            pathApp.setEndCity(c);
+          }
         });
 }
 
@@ -202,22 +177,9 @@ PathApp.prototype.findShortestPath = function()
   }
 }
 
+var pathApp = new PathApp();
+
 $(document).ready(function() {
-  var pathApp = new PathApp();
   pathApp.initializeSvg();
-
   pathApp.refreshSvg();
-  pathApp.createPopovers();
-
-  $('body').on('click', '#setStartCity', function(e) {
-    pathApp.setStartCity();
-  });
-
-  $('body').on('click', '#setEndCity', function(e) {
-    pathApp.setEndCity();
-  });
-
-  $('#findShortestPath').click(function() {
-    pathApp.findShortestPath();
-  });
 });

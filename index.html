@@ -13,16 +13,13 @@
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/city.js"></script>
     <script type="text/javascript" src="js/road.js"></script>
+    <script type="text/javascript" src="js/dijkstra.js"></script>
+    <script type="text/javascript" src="js/bfs.js"></script>
     <script type="text/javascript" src="js/map.js"></script>
     <script type="text/javascript" src="js/path.js"></script>
   </head>
 
   <body>
-    <div id="popoverTemplate" style="display:none;">
-      <button id="setStartCity" class="btn btn-primary">Set Start City</button>
-      <button id="setEndCity" class="btn btn-primary">Set End City</button>
-    </div>
-
     <div class="container">
       <div class="row">
         <div id="toolbar">
@@ -32,8 +29,6 @@
           </p>
           <p id="message">
           </p>
-
-          <button id="findShortestPath" class="btn btn-primary">Find Shortest Path</button>
         </div>
 
         <div id="map">
